@@ -1,3 +1,39 @@
 <meta charset="utf-8">
+<script src="js/zepto.min.js"></script>
+<style>
+  html{
+    font-size: 16px;
+  }
+  #generate{
+    position: fixed;
+    height: 1rem;
+    right: 2rem;
+    bottom: 2rem;
+  }
+</style>
+<script>
+  const BGCOLOR=['lightgreen', 'lightblue', 'lightcoral']
+  const dataArr = []
+  function genWords(method){
+    fetch('/api/rand?m='+(method||'')).then(res=>{
+      // console.log(res.json())
+      res.json().then(data=>{
+        dataArr.push(data)
+        const ul = $('<ul>').css({
+          background: BGCOLOR[dataArr.length % BGCOLOR.length]
+        })
+        data.forEach(x=>ul.append($('<li>', {text: x[0]+','+x[3]})))
+        $('#list').append(ul)
+        ul[0].scrollIntoViewIfNeeded()
+      })
+    })
+  }
+</script>
 <h1>generate words</h1>
-
+<div id="generate">
+  <button  onclick="genWords('noun')">名词</button>
+  <button  onclick="genWords('verb')">动词</button>
+  <button  onclick="genWords('adj')">形容词</button>
+  <button  onclick="genWords('adv')">副词</button>
+</div>
+<div id="list"></div>

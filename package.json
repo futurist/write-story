@@ -20,7 +20,10 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "cookie-parser": "^1.4.3",
+    "csv": "^2.0.0",
     "express": "^4.16.2",
+    "object-cache": "https://github.com/futurist/object-cache",
+    "objutil": "^2.17.2",
     "wordpos": "^1.1.5"
   }
 }
