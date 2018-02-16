@@ -22,7 +22,7 @@ var dict, server
 
 csv.parse(fs.readFileSync('dict.csv', 'utf8'), {delimiter: ','}, (err, data=[])=>{
   console.log('dict data read:', err, data.length)
-  // csv.stringify(data.filter(x=>x && x[5]>=3), (err, out)=>fs.writeFileSync('dict.csv', out))
+  // csv.stringify(data.filter(x=>x && x[5]>=1), (err, out)=>fs.writeFileSync('dict.csv', out))
   // data: [[a,b,c], [d,e,f]]
   // [word,phonetic,definition,translation,pos,collins]
   dict = new MemDB(data, {}, { idKey: '0' })
