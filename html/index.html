@@ -12,15 +12,20 @@
   }
 </style>
 <script>
-  const BGCOLOR=['lightgreen', 'lightblue', 'lightcoral']
+  const BGCOLOR={
+    noun: 'lightgreen', 
+    adj: 'lightblue', 
+    adv: 'lightcoral',
+    verb: 'lightyellow',
+  }
   const dataArr = []
-  function genWords(method){
-    fetch('/api/rand?m='+(method||'')).then(res=>{
+  async function genWords(method){
+    return fetch('/api/rand?m='+(method||'')).then(res=>{
       // console.log(res.json())
-      res.json().then(data=>{
+      return res.json().then(data=>{
         dataArr.push(data)
         const ul = $('<ul>').css({
-          background: BGCOLOR[dataArr.length % BGCOLOR.length]
+          background: BGCOLOR[method]
         })
         data.forEach(x=>ul.append($('<li>', {text: x[0]+','+x[3]})))
         $('#list').append(ul)
@@ -28,9 +33,16 @@
       })
     })
   }
+  async function groupWords(){
+    await genWords('adj')
+    await genWords('noun')
+    await genWords('adv')
+    await genWords('verb')
+  }
 </script>
 <h1>generate words</h1>
 <div id="generate">
+  <button  onclick="groupWords()">一组</button>
   <button  onclick="genWords('noun')">名词</button>
   <button  onclick="genWords('verb')">动词</button>
   <button  onclick="genWords('adj')">形容词</button>
