@@ -61,7 +61,7 @@ app.all('/api/:api', (req, res) => {
       wordpos[method](w, words=>{
         // console.log(w, words.map(x=>x.lemma))
         res.json(
-          arrayUnique(words.map(x=>x.lemma))
+          arrayUnique(words.map(x=>x.lemma).filter(x=>x && x!=w))
           .map(x=>getResult(dict.find(0, x), m))
           .filter(x=>x && x.def)
         )
