@@ -50,7 +50,7 @@ app.all('/api/:api', (req, res) => {
       method = 'rand'+ upperFirst(method)
       // console.log('method', m, method)
       getWords({method, num: n}, words=>res.json(
-        words.map(x=>getResult(x, m)).filter(Boolean)
+        words.map(x=>getResult(x, m)).filter(x=>x && x.def)
       ))
       break
     }
@@ -59,8 +59,12 @@ app.all('/api/:api', (req, res) => {
       let method = wordTypes.find(x=>x.indexOf(m)==0) || ''
       method = 'lookup'+ upperFirst(method)
       wordpos[method](w, words=>{
-        // console.log(words.map(x=>x.lemma))
-        res.json(words.map(x=>getResult(dict.find(0, x.lemma), m)).filter(Boolean))
+        // console.log(w, words.map(x=>x.lemma))
+        res.json(
+          arrayUnique(words.map(x=>x.lemma))
+          .map(x=>getResult(dict.find(0, x), m))
+          .filter(x=>x && x.def)
+        )
       })
       break
     }
@@ -98,17 +102,23 @@ function upperFirst(string) {
   return (string||'').charAt(0).toUpperCase() + string.slice(1);
 }
 
+function arrayUnique(arr){
+  return Array.from(new Set(arr))
+}
+
 function getResult(arrDef, m){
-  let strDef = (arrDef||[])[3]||''
+  arrDef = arrDef||[]
+  let strDef = arrDef[3]||''
+  let word = arrDef[0]
   let arr = (strDef||'').split('\\n')
-  if(!m) return arr.filter(Boolean).join()
+  if(!m) return {word, def: arrayUnique(arr.filter(Boolean)).join()}
   let method = new RegExp('^'+(m[0]=='v' ? 'v[\\w]+\\. ' : m+'\\. '))
   // console.log('arrDef', arr, m, method)
   let ret = arr.map(x=>{
     const r = method.exec(x)
     return r && x.slice(r[0].length)
   }).filter(Boolean)
-  console.log(ret)
-  return ret.join()
+  // console.log(ret)
+  return {word, def: arrayUnique(ret).join()}
 }
 

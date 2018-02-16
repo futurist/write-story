@@ -27,12 +27,26 @@
         const ul = $('<ul>').css({
           background: BGCOLOR[method]
         })
-        data.forEach(x=>ul.append($('<li>', {text: x})))
+        data.forEach(x=>ul.append($('<li>', {
+          text: x.def,
+        }).click(e=>{
+          // console.log(x)
+          lookup(x.word, method)
+        })))
         $('#list').append(ul)
         ul[0].scrollIntoViewIfNeeded()
       })
     })
   }
+
+  async function lookup(word, method){
+    return fetch(`/api/lookup?m=${method||''}&w=${word}`).then(res=>{
+      return res.json().then(data=>{
+        console.log(data)
+      })
+    })
+  }
+
   async function groupWords(){
     await genWords('a')
     await genWords('n')
