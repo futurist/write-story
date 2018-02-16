@@ -13,10 +13,10 @@
 </style>
 <script>
   const BGCOLOR={
-    noun: 'lightgreen', 
-    adj: 'lightblue', 
+    n: 'lightgreen', 
+    a: 'lightblue', 
     adv: 'lightcoral',
-    verb: 'lightyellow',
+    v: 'lightyellow',
   }
   const dataArr = []
   async function genWords(method){
@@ -27,25 +27,25 @@
         const ul = $('<ul>').css({
           background: BGCOLOR[method]
         })
-        data.forEach(x=>ul.append($('<li>', {text: x[0]+','+x[3]})))
+        data.forEach(x=>ul.append($('<li>', {text: x})))
         $('#list').append(ul)
         ul[0].scrollIntoViewIfNeeded()
       })
     })
   }
   async function groupWords(){
-    await genWords('adj')
-    await genWords('noun')
+    await genWords('a')
+    await genWords('n')
     await genWords('adv')
-    await genWords('verb')
+    await genWords('v')
   }
 </script>
 <h1>generate words</h1>
 <div id="generate">
   <button  onclick="groupWords()">一组</button>
-  <button  onclick="genWords('noun')">名词</button>
-  <button  onclick="genWords('verb')">动词</button>
-  <button  onclick="genWords('adj')">形容词</button>
+  <button  onclick="genWords('n')">名词</button>
+  <button  onclick="genWords('v')">动词</button>
+  <button  onclick="genWords('a')">形容词</button>
   <button  onclick="genWords('adv')">副词</button>
 </div>
 <div id="list"></div>

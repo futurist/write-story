@@ -44,11 +44,24 @@ app.all('/api/:api', (req, res) => {
   const {query={}} = req
   switch (api) {
     case 'rand': {
-      let {m='', n=5} = query
+      let {m, n=5} = query
+      // m: n,v,a,adv
       let method = wordTypes.find(x=>x.indexOf(m)==0) || ''
       method = 'rand'+ upperFirst(method)
       // console.log('method', m, method)
-      getWords({method, num: n}, words=>res.json(words))
+      getWords({method, num: n}, words=>res.json(
+        words.map(x=>getResult(x, m)).filter(Boolean)
+      ))
+      break
+    }
+    case 'lookup':{
+      let {m, w=''} = query
+      let method = wordTypes.find(x=>x.indexOf(m)==0) || ''
+      method = 'lookup'+ upperFirst(method)
+      wordpos[method](w, words=>{
+        // console.log(words.map(x=>x.lemma))
+        res.json(words.map(x=>getResult(dict.find(0, x.lemma), m)).filter(Boolean))
+      })
       break
     }
     default: {
@@ -83,5 +96,19 @@ function startServer() {
 
 function upperFirst(string) {
   return (string||'').charAt(0).toUpperCase() + string.slice(1);
+}
+
+function getResult(arrDef, m){
+  let strDef = (arrDef||[])[3]||''
+  let arr = (strDef||'').split('\\n')
+  if(!m) return arr.filter(Boolean).join()
+  let method = new RegExp('^'+(m[0]=='v' ? 'v[\\w]+\\. ' : m+'\\. '))
+  // console.log('arrDef', arr, m, method)
+  let ret = arr.map(x=>{
+    const r = method.exec(x)
+    return r && x.slice(r[0].length)
+  }).filter(Boolean)
+  console.log(ret)
+  return ret.join()
 }
 
