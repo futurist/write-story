@@ -16,10 +16,10 @@
 </style>
 <script>
   const BGCOLOR={
-    n: 'lightgreen', 
-    a: 'lightblue', 
+    a: 'lightgreen', 
+    n: 'lightblue', 
     adv: 'lightcoral',
-    v: 'lightyellow',
+    v: 'lightskyblue',
   }
   const dataArr = []
   async function genWords(method){
@@ -30,24 +30,32 @@
         const ul = $('<ul>').css({
           background: BGCOLOR[method]
         })
-        data.forEach(x=>ul.append($('<li>', {
-          text: `${x.def} - ${x.word}`,
-        }).click(async function() {
-          if(this.clicked) return
-          this.clicked = true
-          // console.log(x)
-          const arr = await lookup(x.word, '')
-          if(arr!=''){
-            $(this).append($('<div>', {
-              text: arr.map(x=>`(${x.word}) ${x.def}`),
-              style: `background: lightgoldenrodyellow; box-shadow: 2px 2px 5px #333333;`
-            }))
-          }
-        })))
+        data.forEach(x=>{
+          let li = $('<li>', {
+            text: `${x.def} - ${x.word}`,
+          })
+          // .click(async function() {
+          //   if(this.clicked) return
+          //   this.clicked = true
+          //   // console.log(x)
+          //   const arr = await lookup(x.word, '')
+          //   addLemma(this, arr)
+          // })
+          addLemma(li, x.lemma)
+          ul.append(li)
+        })
         $('#list').append(ul)
         ul[0].scrollIntoViewIfNeeded()
       })
     })
+  }
+
+  function addLemma(el, arr){
+    if(!arr || arr=='') return
+    $(el).append($('<div>', {
+      text: arr.map(x=>`(${x.word}) ${x.def}`),
+      style: `background: lightgoldenrodyellow; box-shadow: 2px 2px 5px #333333;`
+    }))
   }
 
   async function lookup(word, method){

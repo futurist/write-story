@@ -46,12 +46,27 @@ app.all('/api/:api', (req, res) => {
     case 'rand': {
       let {m, n=5} = query
       // m: n,v,a,adv
-      let method = wordTypes.find(x=>x.indexOf(m)==0) || ''
-      method = 'rand'+ upperFirst(method)
+      let _method = wordTypes.find(x=>x.indexOf(m)==0) || ''
+      let method = 'rand'+ upperFirst(_method)
       // console.log('method', m, method)
-      getWords({method, num: n}, words=>res.json(
-        words.map(x=>getResult(x, m)).filter(x=>x && x.def)
-      ))
+      getWords({method, num: n}, async function(words) {
+        let lemma = await Promise.all(words.map(arr=>{
+          let w = arr[0]
+          let method = 'lookup'+ upperFirst(_method)
+          return new Promise( (res, rej) => wordpos[method](w, words=>{
+            // console.log(arr,w, words.map(x=>x.lemma))
+            res(
+              arrayUnique(words.map(x=>x.lemma).filter(x=>x && x!=w))
+              .map(x=>getResult(dict.find(0, x), m))
+              .filter(x=>x && x.def)
+            )
+          }))
+        }))
+        // console.log('lemma', lemma)
+        res.json(
+          words.map((x,i)=>Object.assign({lemma: lemma[i]}, getResult(x, m))).filter(x=>x && x.def)
+        )
+      })
       break
     }
     case 'lookup':{
