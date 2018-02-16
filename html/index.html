@@ -1,25 +1,46 @@
 <meta charset="utf-8">
+<link rel="stylesheet" href="css/dragula.css">
 <script src="js/zepto.min.js"></script>
+<script src="js/dragula.min.js"></script>
 <style>
   html{
     font-size: 16px;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  body{
+    background: #c5c5c5;
+  }
+  #title{
+    text-align: center;
+    color: #444;
   }
   #generate{
     position: fixed;
     height: 1rem;
     right: 2rem;
     bottom: 2rem;
+    z-index: 9e9;
   }
   #generate button {
     font-size: 1.1rem;
   }
+  .btnAdj{ background: #8dccb6; }
+  .btnNoun{ background: #e6e3a5; }
+  .btnAdv{ background: #e4baa4; }
+  .btnVerb{ background: #a1bdce; }
 </style>
 <script>
   const BGCOLOR={
-    a: 'lightgreen', 
-    n: 'lightblue', 
-    adv: 'lightcoral',
-    v: 'lightskyblue',
+    a: '#8dccb6', 
+    n: '#e6e3a5', 
+    adv: '#e4baa4',
+    v: '#a1bdce',
+  }
+  const FGCOLOR={
+    a: '#35806f', 
+    n: '#a08c6c', 
+    adv: '#8a6565',
+    v: '#586975',
   }
   const dataArr = []
   async function genWords(method){
@@ -28,6 +49,7 @@
       return res.json().then(data=>{
         dataArr.push(data)
         const ul = $('<ul>').css({
+          color: FGCOLOR[method],
           background: BGCOLOR[method]
         })
         data.forEach(x=>{
@@ -41,9 +63,17 @@
           //   const arr = await lookup(x.word, '')
           //   addLemma(this, arr)
           // })
-          addLemma(li, x.lemma)
+
+          // addLemma(li, x.lemma)
+
           ul.append(li)
         })
+        ul.css({position:'relative'}).append($('<button>', {
+          style: 'position:absolute; right:0; top:0; font:1.2rem Arial;',
+          text:'\u2a2f'
+        }).click(function(){
+          $(this).parent().remove()
+        }))
         $('#list').append(ul)
         ul[0].scrollIntoViewIfNeeded()
       })
@@ -73,13 +103,16 @@
     await genWords('adv')
     await genWords('v')
   }
+  window.onload=function(){
+    dragula([document.querySelector('#list')])
+  }
 </script>
-<h1>generate words</h1>
-<div id="generate">
-  <button  onclick="groupWords()">一组</button>
-  <button  onclick="genWords('n')">名词</button>
-  <button  onclick="genWords('v')">动词</button>
-  <button  onclick="genWords('a')">形容词</button>
-  <button  onclick="genWords('adv')">副词</button>
-</div>
+<h1 id="title">generate words</h1>
 <div id="list"></div>
+<div id="generate">
+  <button class="" onclick="groupWords()">一组</button>
+  <button class="btnAdj" onclick="genWords('a')">形容词</button>
+  <button class="btnNoun" onclick="genWords('n')">名词</button>
+  <button class="btnAdv" onclick="genWords('adv')">副词</button>
+  <button class="btnVerb" onclick="genWords('v')">动词</button>
+</div>
