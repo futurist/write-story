@@ -28,10 +28,18 @@
           background: BGCOLOR[method]
         })
         data.forEach(x=>ul.append($('<li>', {
-          text: x.def,
-        }).click(e=>{
+          text: `${x.def} - ${x.word}`,
+        }).click(async function() {
+          if(this.clicked) return
+          this.clicked = true
           // console.log(x)
-          lookup(x.word, method)
+          const arr = await lookup(x.word, '')
+          if(arr!=''){
+            $(this).append($('<div>', {
+              text: arr.map(x=>`(${x.word}) ${x.def}`),
+              style: `background: lightgoldenrodyellow; box-shadow: 2px 2px 5px #333333;`
+            }))
+          }
         })))
         $('#list').append(ul)
         ul[0].scrollIntoViewIfNeeded()
@@ -43,6 +51,7 @@
     return fetch(`/api/lookup?m=${method||''}&w=${word}`).then(res=>{
       return res.json().then(data=>{
         console.log(data)
+        return data
       })
     })
   }
