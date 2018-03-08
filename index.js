@@ -109,7 +109,7 @@ function getWords(config={}, callback){
 
 function startServer() {
   server = app.listen(8181, () => {
-    console.log('service start')
+    console.log('service start @', server.address().port)
   })
 }
 
